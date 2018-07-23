@@ -27,27 +27,27 @@ int main(int, char const**)
     
     srand((unsigned int) time(NULL));
     SongList musicPlayList;
-    musicPlayList.buildList(resourcePath() + "musicPlayList.csv");
+    musicPlayList.buildList("musicPlayList.csv");
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
 
     // Set the Icon
     sf::Image icon;
-    if (!icon.loadFromFile(resourcePath() + "icon.png")) {
+    if (!icon.loadFromFile("icon.png")) {
         return EXIT_FAILURE;
     }
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
     // Load a sprite to display
     sf::Texture texture;
-    if (!texture.loadFromFile(resourcePath() + "menuPicture.jpg")) {
+    if (!texture.loadFromFile("menuPicture.jpg")) {
         return EXIT_FAILURE;
     }
     sf::Sprite sprite(texture);
 
     // Create a graphical text to display
     sf::Font font;
-    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
+    if (!font.loadFromFile("sansation.ttf")) {
         return EXIT_FAILURE;
     }
     sf::Text text("Hello SFML\nHelloWorld", font, 50);
@@ -55,7 +55,7 @@ int main(int, char const**)
 
     // Load a music to play
     sf::Music music;
-    if (!music.openFromFile(resourcePath() + "nice_music.ogg")) {
+    if (!music.openFromFile("nice_music.ogg")) {
         return EXIT_FAILURE;
     }
 

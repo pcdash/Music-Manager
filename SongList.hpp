@@ -17,7 +17,7 @@
 //#include "RecordDataWithGraphics.hpp"
 #include <iostream>
 #include <fstream>
-#include <unistd.h>
+//#include <unistd.h>
 #include "ResourcePath.hpp"
 
 using std::fstream;
@@ -35,7 +35,7 @@ public:
     void insertHelper(std::string songData);
     //Setters and getters
     Node<BaseRecordData> * getHead();
-    void playList(sf::RenderWindow &window);
+    bool playList(sf::RenderWindow &window);
     
 private:
     //Pointer to front

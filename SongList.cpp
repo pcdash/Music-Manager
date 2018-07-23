@@ -104,7 +104,7 @@ Node<BaseRecordData> * SongList::getHead()
 
 
 //Play the list??
-void SongList::playList(sf::RenderWindow &window)
+bool SongList::playList(sf::RenderWindow &window)
 {
     //Initialize the base data
     Node<BaseRecordData> *pCurSong = this -> mpList, *pLast = this -> mpList;
@@ -115,12 +115,12 @@ void SongList::playList(sf::RenderWindow &window)
     songSkipped = false;
     int songLength = 0;
     // Load the font
-    if (!font.loadFromFile(resourcePath() + "sansation.ttf")){
+    if (!font.loadFromFile("sansation.ttf")){
         return EXIT_FAILURE;
     }
     // Load a sprite to display
     sf::Texture texture;
-    if (!texture.loadFromFile(resourcePath() + "cute_image.jpg")) {
+    if (!texture.loadFromFile("cute_image.jpg")) {
         return EXIT_FAILURE;
     }
     sf::Sprite sprite(texture);
@@ -176,6 +176,7 @@ void SongList::playList(sf::RenderWindow &window)
                 playListEnded = true;
                 music.stop();
             }
+            
         }
         //If the music is ended get the next song
         if (!playListEnded && music.getStatus() == sf::Music::Status::Stopped){
@@ -189,7 +190,7 @@ void SongList::playList(sf::RenderWindow &window)
                     setSongText(pCurSong -> getData());
                     //Check if the music file was already opened
                     //if (music.getStatus())
-                    if (!(music).openFromFile(resourcePath() + (pCurSong -> getData()).getSongFileName()))
+                    if (!(music).openFromFile((pCurSong -> getData()).getSongFileName()))
                     {
                         return EXIT_FAILURE;
                     }
