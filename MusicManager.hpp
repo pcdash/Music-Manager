@@ -28,7 +28,8 @@ public:
     ~MusicManager();
     
     void runProgram();
-    
+    std::string getCurrentTime(sf::Music &music);
+    std::string getCurrentTime(float songTime);
 private:
     std::string songFileName;
     

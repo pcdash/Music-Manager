@@ -12,12 +12,12 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "Node.hpp"
-#include "baseRecordData.hpp"
-//Includes baseRecordData here
-//#include "RecordDataWithGraphics.hpp"
+//#include "RecordData.hpp"
+//Includes RecordData here
+#include "RecordDataWithGraphics.hpp"
 #include <iostream>
 #include <fstream>
-#include <unistd.h>
+//#include <unistd.h>
 #include "ResourcePath.hpp"
 
 using std::fstream;
@@ -34,12 +34,13 @@ public:
     void buildList(std::string fileName);
     void insertHelper(std::string songData);
     //Setters and getters
-    Node<BaseRecordData> * getHead();
+    Node<RecordData> * getHead();
     void playList(sf::RenderWindow &window);
-    
+    void play(sf::Texture &texture, sf::Music &music, sf::Text &text, sf::Font &font, bool playPrev);
+    void updateWhichSong(void);
 private:
     //Pointer to front
-    Node<BaseRecordData> * mpList;
+    Node<RecordData> * mpList;
     
     //Could pass these in from main
     fstream songFile;
@@ -51,9 +52,10 @@ private:
     sf::Music music;
     
     //Helper Functions
-    void destroySongList(Node<BaseRecordData> * pList);
-    void setSongText(BaseRecordData pSong);
-    void setSongText(BaseRecordData pSong, sf::Text &ptext);
+    void destroySongList(Node<RecordData> * pList);
+    void setSongText(RecordData pSong);
+    //void setSongText(RecordData pSong, sf::Text &ptext);
+    void setSongText(RecordData &pSong, sf::Text &ptext, sf::Font &font);
 };
 
 #endif /* SongList_hpp */

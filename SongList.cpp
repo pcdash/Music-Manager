@@ -14,7 +14,8 @@ SongList::SongList()
     
     //Sets the random color list
     (this -> randomColors)[0] = sf::Color::Red;
-    (this -> randomColors)[1] = sf::Color::Blue;
+    //(this -> randomColors)[1] = sf::Color::Blue;
+    (this -> randomColors)[1] = sf::Color::Yellow;
     (this -> randomColors)[2] = sf::Color::Green;
     (this -> randomColors)[3] = sf::Color::Magenta;
     (this -> randomColors)[4] = sf::Color::Black;
@@ -33,6 +34,7 @@ void SongList::buildList(std::string fileName)
             getline(songFile, tempSongData);
             insertHelper(tempSongData);
         }
+        songFile.close();
     }
     else
     {
@@ -47,9 +49,11 @@ void SongList::insertHelper(std::string songData)
     //Data is actually available
     if (songData != "")
     {
-        BaseRecordData tempRecord(songData);
+        //Make data with base record
+        //Make data with nonbase record
+        RecordData tempRecord(songData);
         //Make a new temp node
-        Node<BaseRecordData> *pMem = new Node<BaseRecordData>(tempRecord), *pTemp = nullptr, *pLast = nullptr;
+        Node<RecordData> *pMem = new Node<RecordData>(tempRecord), *pTemp = nullptr, *pLast = nullptr;
         //Check to see if data was actually allocated
         if (pMem != nullptr)
         {
@@ -87,7 +91,7 @@ SongList::~SongList()
 }
 
 //Helper Functions
-void SongList::destroySongList(Node<BaseRecordData> * pList)
+void SongList::destroySongList(Node<RecordData> * pList)
 {
     //List is circular
     if (pList != nullptr)
@@ -97,161 +101,42 @@ void SongList::destroySongList(Node<BaseRecordData> * pList)
     }
 }
 
-Node<BaseRecordData> * SongList::getHead()
+Node<RecordData> * SongList::getHead()
 {
     return this -> mpList;
 }
 
-
-//Play the list??
-void SongList::playList(sf::RenderWindow &window)
-{
-    //Initialize the base data
-    Node<BaseRecordData> *pCurSong = this -> mpList, *pLast = this -> mpList;
-    bool listPlayed = false,
-    songEnded = false,
-    playListEnded = false,
-    songPaused = false,
-    songSkipped = false;
-    int songLength = 0;
-    // Load the font
-    if (!font.loadFromFile(resourcePath() + "sansation.ttf")){
-        return EXIT_FAILURE;
-    }
-    // Load a sprite to display
-    sf::Texture texture;
-    if (!texture.loadFromFile(resourcePath() + "cute_image.jpg")) {
-        return EXIT_FAILURE;
-    }
-    sf::Sprite sprite(texture);
-    //Run while the window is open
-    while (window.isOpen() && !playListEnded){
-        sf::Event event;
-        while (window.pollEvent(event)){
-            if (event.type == sf::Event::Closed){
-                window.close();
-            }
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape){
-                window.close();
-            }
-            // Pause the song
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down) {
-                music.pause();
-                std::cout << "Music Paused" << std::endl;
-                songPaused = true;
-            }
-            // Play the song if paused
-            if ((songPaused) && (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)) {
-                music.play();
-                std::cout << "Music unpaused" << std::endl;
-                songPaused = false;
-            }
-            //Skip the  next song? Maybe should do with mouse clicks instead
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-            {
-                //Stop the current music
-                music.stop();
-                //Move to the next node
-                //pCurSong = pCurSong -> getNext();
-                std::cout << "Song skipped" << std::endl;
-                songSkipped = true;
-            }
-            //Replay the song?
-
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left) {
-                pCurSong = pCurSong -> getPrev();
-                //stop the music
-                music.stop();
-                //Reset the marker to tell the end of the list
-                if (pCurSong == pLast && listPlayed)
-                {
-                    listPlayed = false;
-                }
-                songSkipped = true;
-                std::cout << "get previous song" << std::endl;
-            }
-            //How to stop and go back to main menu??
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return)
-            {
-                playListEnded = true;
-                music.stop();
-            }
-        }
-        //If the music is ended get the next song
-        if (!playListEnded && music.getStatus() == sf::Music::Status::Stopped){
-            //Get next song?
-            if (pCurSong != nullptr)
-            {
-                if (!(pCurSong -> getData() == pLast -> getData()) || !listPlayed)
-                {
-                    (pCurSong -> getData()).updateTimesPlayed();
-                    //setSongText(pCurSong -> getData(), songText);
-                    setSongText(pCurSong -> getData());
-                    //Check if the music file was already opened
-                    //if (music.getStatus())
-                    if (!(music).openFromFile(resourcePath() + (pCurSong -> getData()).getSongFileName()))
-                    {
-                        return EXIT_FAILURE;
-                    }
-                    songLength = (int) music.getDuration().asSeconds() % 500;
-                    listPlayed = true;
-                    pCurSong = pCurSong -> getNext();
-                } else{
-                    playListEnded = true;
-                }
-            }
-            //Update song skipped
-            songSkipped = false;
-            //music.play();
-        }
-        
-        //Play the music
-        //if (!songPaused && music.getStatus() == sf::Music::Status::Stopped)
-        if (!playListEnded && music.getStatus() == sf::Music::Status::Stopped)
-        {
-            // Play the music
-            music.play();
-            std::cout << "Play music" << std::endl;
-        }
-        if ((int) music.getDuration().asSeconds() % 500 == (int) songLength){
-            //Move text
-            text.setPosition(text.getPosition().x + .1, text.getPosition().y);
-        }
-        if (text.getPosition().x > window.getSize().x){
-            text.setPosition(0, text.getPosition().y);
-        }
-        //Clear the window
-        window.clear();
-        
-        //Display the sprite
-        window.draw(sprite);
-        
-        //Display the text
-        window.draw(text);
-        
-        //Update the window
-        window.display();
-    }
-}
-
-void SongList::setSongText(BaseRecordData pSong)
-{
-    //(this -> text).setString(pSong.getArtist() + " " + pSong.getAlbum() + " " + pSong.get)
-    (this -> text).setString(pSong.getSongText());
-    (this -> text).setFont(font);
-    (this -> text).setFillColor(this -> randomColors[rand() % 5]);
-    //Should have default character size of 30?
-}
-
-void SongList::setSongText(BaseRecordData pSong, sf::Text &ptext)
+void SongList::setSongText(RecordData &pSong, sf::Text &ptext, sf::Font &font)
 {
     (ptext).setString(pSong.getSongText());
     (ptext).setFont(font);
     (ptext).setFillColor(this -> randomColors[rand() % 5]);
+    (ptext).setOutlineColor(this -> randomColors[rand() % 5]);
 }
 
 
+void SongList::play(sf::Texture &texture, sf::Music &music, sf::Text &text, sf::Font &font, bool playPrev)
+{
+    if (playPrev){
+        this -> mpList = (this -> mpList) -> getPrev();
+    }
+    // Load a texture to display
+    if (!texture.loadFromFile(/*resourcePath() + */((this -> mpList) -> getData()).getAlbumCover())) {
+        return EXIT_FAILURE;
+    }
+    if (!font.loadFromFile(/*resourcePath() + */"sansation.ttf")) {
+        return EXIT_FAILURE;
+    }
+    if (!music.openFromFile(/*resourcePath() + */((this -> mpList) -> getData()).getSongFileName())){
+        return EXIT_FAILURE;
+    }
+    setSongText(((this -> mpList) -> getData()), text, font);
+    //this -> mpList = (this -> mpList) -> getNext();
+}
 
+void SongList::updateWhichSong(void){
+    this -> mpList = (this -> mpList) -> getNext();
+}
 
 
 
