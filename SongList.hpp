@@ -17,7 +17,7 @@
 #include "RecordDataWithGraphics.hpp"
 #include <iostream>
 #include <fstream>
-//#include <unistd.h>
+#include <unistd.h>
 #include "ResourcePath.hpp"
 
 using std::fstream;

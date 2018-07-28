@@ -25,12 +25,12 @@ BaseRecordData::BaseRecordData()
     
 }
 //Constructor
-BaseRecordData::BaseRecordData(std::string fileData)
+BaseRecordData::BaseRecordData(std::string &fileData)
 {
     parseData(fileData);
 }
 //Private functions
-void BaseRecordData::parseData(std::string fileData)
+void BaseRecordData::parseData(std::string &fileData)
 {
     unsigned long int start = 0, end = 0;
     std::string current = "", first = "", last = "";
@@ -97,10 +97,15 @@ void BaseRecordData::parseData(std::string fileData)
     end = fileData.find(",", start);
     current = fileData.substr(start, end - start);
     this -> mSongFileName = current;
+    start = end + 1;
     
     //Set song text
     this -> mSongText = this -> mArtist + " " + this -> mAlbumTitle + " " + this -> mSongTitle + " " +
     this -> mGenre;
+    //Gets the file name
+    end = fileData.find(",", start);
+    current = fileData.substr(start, end - start);
+    fileData = current;
 }
 //Copy constructor
 BaseRecordData::BaseRecordData(BaseRecordData &copy)

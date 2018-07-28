@@ -14,9 +14,10 @@ RecordData::RecordData() : BaseRecordData()
     this -> mAlbumCover = "";
 }
 //Constructor
-RecordData::RecordData(std::string fileData)
+RecordData::RecordData(std::string fileData) : BaseRecordData(fileData)
 {
-    parseData(fileData);
+    this -> mAlbumCover = fileData;
+    //parseData(fileData);
 }
 //Copy constructor
 RecordData::RecordData(RecordData &copy) : BaseRecordData(copy)
@@ -26,7 +27,7 @@ RecordData::RecordData(RecordData &copy) : BaseRecordData(copy)
 //Destructor
 RecordData::~RecordData()
 {
-    std::cout << "Inside RecordData destructor" << std::endl;
+    //std::cout << "Inside RecordData destructor" << std::endl;
 }
 
 //Setters and getters

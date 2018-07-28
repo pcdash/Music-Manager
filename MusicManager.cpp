@@ -21,22 +21,25 @@ MusicManager::~MusicManager(){
 void MusicManager::runProgram()
 {
     auto songPosition = sf::seconds(0);
-    
+    sf::Text displayMenu;
     unsigned int frameRate = 60;
     bool playMusic = false,
     playPrevious = false,
     skipBackwards = false,
-    getCurrentTimeOfSong = false;
+    getCurrentTimeOfSong = false,
+    changedSize = false,
+    changeVolume = false;
+    int song = 0;
     int songLength = 0;
     std::string totalSongLength = "     ---------------------------------------- ";
     sf::Time displaySongPosition;
     SongList musicPlayList;
-    musicPlayList.buildList(/*resourcePath() + */"musicPlayList.csv");
+    musicPlayList.buildList(resourcePath() + "musicPlayList.csv");
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     // Set the Icon
     sf::Image icon;
-    if (!icon.loadFromFile(/*resourcePath() + */"icon.png")) {
+    if (!icon.loadFromFile(resourcePath() + "icon.png")) {
         return EXIT_FAILURE;
     }
     //window.setFramerateLimit(frameRate);
@@ -44,11 +47,16 @@ void MusicManager::runProgram()
     sf::Music music;
     sf::Font font;
     sf::Texture mainTexture;
-    if (!mainTexture.loadFromFile(/*resourcePath() + */"cute_image.jpg")) {
+    if (!mainTexture.loadFromFile(resourcePath() + "IMG_3017.jpg")) {
         return EXIT_FAILURE;
     }
     sf::Texture songTexture;
-    
+    displayMenu.setFont(font);
+    displayMenu.setCharacterSize(20);
+    //displayMenu.setString("HAPPY THOUGHTS PRODUCTIONS BRINGS YOU\n                          MUSIC MANAGER\n                                         BY\n                     Chris - Fluffy Dog Owner\n                         Will - EEEEEEEEE = 0\n                      Allison - Busted Function\n                          Paul - The Monster");
+    displayMenu.setString("HAPPY THOUGHTS PRODUCTIONS BRINGS YOU\n\t\t\t\t\t\t\t MUSIC MANAGER\n\t\t\t\t\t\t\t\t\t\t\tBY\n\t\t\t\t\t\tChris - Fluffy Dog Owner\n\t\t\t\t\t\t  Will - EEEEEEEEE = 0\n\t\t\t\t\t\tAllison - Busted Function\n\t\t\t\t\t\t     Paul - The Monster");
+    displayMenu.setFillColor(*(new sf::Color(sf::Color::Yellow)));
+    displayMenu.setPosition(150, 200);
     sf::Text text, timeOfSong, totalTimeOfSong;
     sf::Transform transform;
     musicPlayList.play(songTexture, music, text, font, playPrevious);
@@ -67,10 +75,11 @@ void MusicManager::runProgram()
     timeOfSong.setPosition(text.getPosition().x + 150, text.getPosition().y + 520);
     totalTimeOfSong.setPosition(text.getPosition().x + 150, text.getPosition().y + 550);
     sf::Sprite mainSprite(mainTexture);
+    
     //sf::Sprite musicAlbumSprite(songTexture);
-    mainSprite.setColor(sf::Color::Blue);
-    Disc cdShape(200, 40, *(new sf::Vector2f(window.getSize().x/4, window.getSize().y/5)), &songTexture);
-    Disc innerCutout(30, 35, *(new sf::Vector2f(cdShape.getPosition().x + cdShape.getRadius() - 30, cdShape.getPosition().y + cdShape.getRadius() - 30)), *(new sf::Color(sf::Color::Black)));
+    //mainSprite.setColor(sf::Color::Blue);
+    Disc cdShape(175, 40, *(new sf::Vector2f(window.getSize().x/4, window.getSize().y/5)), &songTexture);
+    Disc innerCutout(15, 35, *(new sf::Vector2f(cdShape.getPosition().x + cdShape.getRadius() - 15, cdShape.getPosition().y + cdShape.getRadius() - 15)), *(new sf::Color(sf::Color::Black)));
     
     // Play the music
     //music.play();
@@ -142,6 +151,20 @@ void MusicManager::runProgram()
                     timeOfSong.move(-10,0);
                     music.setPlayingOffset(sf::Time(songPosition));
                 }
+                if (event.key.code == sf::Keyboard::M){
+                    // change the size of the window
+                    window.setSize(sf::Vector2u(300, 75));
+                    //Change window size
+                    window.setPosition(sf::Vector2i(2580, 1075));
+                    changedSize = true;
+                }
+                if (event.key.code == sf::Keyboard::N){
+                    // change the size of the window
+                    window.setSize(sf::Vector2u(800, 600));
+                    //Change window size
+                    window.setPosition(sf::Vector2i(1040, 334));
+                    changedSize = false;
+                }
             }
         }
         //Plays always no matter if it hits the end or not because of this while loop
@@ -157,12 +180,24 @@ void MusicManager::runProgram()
             window.draw(mainSprite);
             window.draw(loadingCD);
             
+           
             //Display the changes
             window.display();
             system("pause");
-            //sleep(2);
+            sleep(2);
             window.clear();
             music.play();
+            /*
+            if (song == 1){
+                music.setVolume(100);
+                //music.setAttenuation(100);
+            } else{
+                music.setVolume(1);
+                //music.setAttenuation(100);
+            }
+             */
+             song += 1;
+            //music.setVolume(20);
             //songLength = (int) music.getDuration().asSeconds() % 500;
             songLength = (int) music.getDuration().asSeconds() / 60;
             totalTimeOfSong.setString(totalSongLength + getCurrentTime(music.getDuration().asSeconds()));
@@ -175,16 +210,17 @@ void MusicManager::runProgram()
         //timeOfSong.setPosition(timeOfSong.getPosition().x + 20 / music.getDuration().asSeconds(), timeOfSong.getPosition().y);
         // Clear screen
         window.clear();
-        if (music.getStatus() != sf::Music::Status::Stopped){
+        if (playMusic && music.getStatus() != sf::Music::Status::Stopped){
             if ((int) music.getDuration().asSeconds() / 60 == (int) songLength){
                 //Move text
                 text.setPosition(text.getPosition().x + .1, text.getPosition().y);
             }
-            if ((int) music.getDuration().asSeconds() / 60 == (int) songLength){
-                //timeOfSong.setPosition(timeOfSong.getPosition().x +.01, timeOfSong.getPosition().y);
-                //timeOfSong.move(.01, 0);
+            if (music.getStatus() != sf::Music::Status::Paused){
+                timeOfSong.move((float)60 / (float)(music.getDuration().asSeconds() * frameRate), 0);
             }
-            timeOfSong.move((float)60 / (float)(music.getDuration().asSeconds() * frameRate), 0);
+            if (timeOfSong.getPosition().x > totalTimeOfSong.getPosition().x + 100){
+                timeOfSong.move(totalTimeOfSong.getPosition().x, 0);
+            }
             if (text.getPosition().x > window.getSize().x){
                 text.setPosition(0, text.getPosition().y);
             }
@@ -196,15 +232,30 @@ void MusicManager::runProgram()
                 window.draw(timeOfSong);
                 window.draw(totalTimeOfSong);
             }
-            transform.rotate(.25, cdShape.getPosition().x + cdShape.getRadius(), cdShape.getPosition().y + cdShape.getRadius());
+            transform.rotate(.15, cdShape.getPosition().x + cdShape.getRadius(), cdShape.getPosition().y + cdShape.getRadius());
             window.draw(cdShape, transform);
             window.draw(innerCutout);
             
             // Draw the string
             window.draw(text);
             
+        } else{
+            window.draw(displayMenu);
         }
-        
+        if (changedSize){
+            window.clear();
+            if ((int) music.getDuration().asSeconds() / 60 == (int) songLength){
+                //Move text
+                text.setPosition(text.getPosition().x + .1, text.getPosition().y);
+            }
+            if (text.getPosition().x > window.getSize().x){
+                text.setPosition(0, text.getPosition().y);
+            }
+            text.setCharacterSize(80);
+            window.draw(text);
+        } else{
+            text.setCharacterSize(30);
+        }
         // Update the window
         window.display();
     }

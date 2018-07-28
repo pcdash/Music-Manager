@@ -25,7 +25,7 @@ public:
     //Default Constructor
     BaseRecordData();
     //Constructor
-    BaseRecordData(std::string fileData);
+    BaseRecordData(std::string &fileData);
     //Copy constructor
     BaseRecordData(BaseRecordData &copy);
     //Destructor
@@ -78,7 +78,7 @@ protected:
     //Need a set of tags?
     
     //Private functions
-    void parseData(std::string fileData);
+    void parseData(std::string &fileData);
 };
 
 

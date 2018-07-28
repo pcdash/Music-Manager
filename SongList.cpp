@@ -121,13 +121,13 @@ void SongList::play(sf::Texture &texture, sf::Music &music, sf::Text &text, sf::
         this -> mpList = (this -> mpList) -> getPrev();
     }
     // Load a texture to display
-    if (!texture.loadFromFile(/*resourcePath() + */((this -> mpList) -> getData()).getAlbumCover())) {
+    if (!texture.loadFromFile(resourcePath() + ((this -> mpList) -> getData()).getAlbumCover())) {
         return EXIT_FAILURE;
     }
-    if (!font.loadFromFile(/*resourcePath() + */"sansation.ttf")) {
+    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
         return EXIT_FAILURE;
     }
-    if (!music.openFromFile(/*resourcePath() + */((this -> mpList) -> getData()).getSongFileName())){
+    if (!music.openFromFile(resourcePath() + ((this -> mpList) -> getData()).getSongFileName())){
         return EXIT_FAILURE;
     }
     setSongText(((this -> mpList) -> getData()), text, font);
